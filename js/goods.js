@@ -3,10 +3,13 @@ var cart = {}; // корзина
 function init() {
     /* //вычитуем файл goods.json
     $.getJSON("goods.json", goodsOut); */
+    var hash = window.location.hash.substring(1);
+    console.log(hash);
     $.post(
         "admin/core.php",
         {
-            "action" : "loadGoods"
+            "action" : "loadSingleGoods",
+            "id" : hash
         },
         goodsOut
     );
@@ -14,28 +17,24 @@ function init() {
 
 function goodsOut(data) {
     // вывод на страницу
-    data = JSON.parse(data);
-    console.log(data);
-    var out='';
-    for (var key in data) {
-        // out +='<div class="cart">';
-        // out +='<p class="name">'+data[key].name+'</p>';
-        // out += '<img src="images/'+data[key].img+'" alt="">';
-        // out +='<div class="cost">'+data[key].cost+'</div>';
-        // out +='<button class="add-to-cart">Купить</button>';
-        // out +='</div>';
-        //---------
-        out +='<div class="cart">';
-        out +=`<button class="later" data-id="${key}">&hearts;</button>`;
-        out +=`<p class="name"><a href="goods.html#${key}">${data[key].name}</a></p>`;
-        out +=`<img src="images/${data[key].img}" alt="">`;
-        out +=`<div class="cost">${data[key].cost}</div>`;
-        out +=`<button class="add-to-cart" data-id="${key}">Купить</button>`;
-        out +='</div>';
+    if (data!=0) {
+        data = JSON.parse(data);
+        console.log(data);
+        var out='';
+            out +='<div class="cart">';
+            out +=`<button class="later" data-id="${data.id}">&hearts;</button>`;
+            out +=`<p class="name">${data.name}</p>`;
+            out +=`<img src="images/${data.img}" alt="">`;
+            out +=`<div class="cost">${data.cost}</div>`;
+            out +=`<button class="add-to-cart" data-id="${data.id}">Купить</button>`;
+            out +='</div>';
+        $('.goods-out').html(out);
+        $('.add-to-cart').on('click', addToCart);
+        $('.later').on('click', addToLater);
     }
-    $('.goods-out').html(out);
-    $('.add-to-cart').on('click', addToCart);
-    $('.later').on('click', addToLater);
+    else {
+        $('.goods-out').html('error 404');
+    }
 }
 
 function addToLater() {
